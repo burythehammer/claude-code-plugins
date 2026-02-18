@@ -1,0 +1,10 @@
+{
+  "name": "terraform-migration",
+  "version": "0.1.0",
+  "description": "Skills for migrating any Terraform provider from SDK v2 to the Plugin Framework",
+  "author": {
+    "name": "burythehammer"
+  },
+  "repository": "https://github.com/burythehammer/claude-code-plugins",
+  "license": "MIT"
+}
