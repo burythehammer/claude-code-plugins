@@ -16,8 +16,10 @@
 | `TypeSet` with `Elem: &schema.Schema{Type: schema.TypeString}` | `schema.SetAttribute{ElementType: types.StringType}` | `types.Set` | Simple set of scalars |
 | `TypeList` with `Elem: &schema.Schema{Type: schema.TypeString}` | `schema.ListAttribute{ElementType: types.StringType}` | `types.List` | Simple list of scalars |
 | `TypeMap` with `Elem: &schema.Schema{Type: schema.TypeString}` | `schema.MapAttribute{ElementType: types.StringType}` | `types.Map` | Simple map of scalars |
-| `TypeSet` with `Elem: &schema.Resource{Schema: ...}` | `schema.SetNestedBlock{}` in `Blocks` map | `types.Set` | **MUST use Block, not Attribute** (protocol v5) |
-| `TypeList` with `Elem: &schema.Resource{Schema: ...}` | `schema.ListNestedBlock{}` in `Blocks` map | `types.List` | **MUST use Block, not Attribute** (protocol v5) |
+| `TypeSet` with `Elem: &schema.Resource{Schema: ...}` | `schema.SetNestedBlock{}` in `Blocks` map | `types.Set` | **MUST use Block, not Attribute** when muxed with `tf5muxserver` |
+| `TypeList` with `Elem: &schema.Resource{Schema: ...}` | `schema.ListNestedBlock{}` in `Blocks` map | `types.List` | **MUST use Block, not Attribute** when muxed with `tf5muxserver` |
+| `TypeSet` with `Elem: &schema.Resource{...}`, `MaxItems: 1` | `schema.SingleNestedBlock{}` in `Blocks` map | `types.Object` | Single nested object — use `SingleNestedBlock` not `SetNestedBlock` |
+| `TypeList` with `Elem: &schema.Resource{...}`, `MaxItems: 1` | `schema.SingleNestedBlock{}` in `Blocks` map | `types.Object` | Single nested object — use `SingleNestedBlock` not `ListNestedBlock` |
 
 ## Field Behaviour Mapping
 
