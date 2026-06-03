@@ -1,0 +1,10 @@
+{
+  "name": "repo-wiki",
+  "version": "0.1.0",
+  "description": "Skills for maintaining structured per-project wikis in Outline",
+  "author": {
+    "name": "burythehammer"
+  },
+  "repository": "https://github.com/burythehammer/claude-code-plugins",
+  "license": "MIT"
+}
