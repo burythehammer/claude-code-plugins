@@ -1,0 +1,5 @@
+{
+  "name": "claude-md-slim",
+  "version": "0.1.0",
+  "description": "Audit bloated CLAUDE.md files and restructure them with progressive disclosure. Deletes common-knowledge rules, extracts sections into path-scoped .claude/rules/ files and subdirectory CLAUDE.md files, injects @imports, and offloads long-form docs to Outline when configured."
+}
