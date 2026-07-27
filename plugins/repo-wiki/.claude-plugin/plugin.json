@@ -1,7 +1,7 @@
 {
   "name": "repo-wiki",
   "version": "0.1.0",
-  "description": "Skills for maintaining structured per-project wikis in Outline",
+  "description": "Skills for maintaining structured per-project wikis in Outline. Supports init, sync, lint, enrich, and search commands.",
   "author": {
     "name": "burythehammer"
   },

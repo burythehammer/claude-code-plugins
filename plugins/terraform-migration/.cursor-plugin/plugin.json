@@ -1,0 +1,5 @@
+{
+  "name": "terraform-migration",
+  "version": "0.1.0",
+  "description": "Skills for migrating any Terraform provider from SDK v2 to the Plugin Framework. Step-by-step workflow, code patterns, schema mapping, and common gotchas."
+}
