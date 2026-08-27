@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repo Is
 
-A Claude Code plugin marketplace containing skills for Terraform provider development. There is no build system, compiled code, or test suite — the "artifacts" are Markdown files that Claude Code loads as skills at runtime.
+A Claude Code plugin marketplace. There is no build system, compiled code, or test suite — the "artifacts" are Markdown files that Claude Code loads as skills at runtime. See `README.md` for the current list of plugins.
 
 ## Testing Locally
 
 To test a plugin without publishing:
 
 ```bash
-claude --plugin-dir ./plugins/terraform-migration
+claude --plugin-dir ./plugins/<name>
 ```
 
 This loads the plugin directly from disk. Once inside the session, the skills are available and trigger on their description keywords.
@@ -58,5 +58,21 @@ Install into a Claude Code session from the marketplace:
 
 ```
 /plugin marketplace add burythehammer/claude-code-plugins
-/plugin install terraform-migration@burythehammer-claude-code-plugins
+/plugin install <name>@burythehammer-claude-code-plugins
 ```
+
+See `README.md` for the current plugin names.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub issues on `burythehammer/claude-code-plugins` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — one `CONTEXT.md` + `docs/adr/` at the repo root, created lazily by `/domain-modeling` when needed. See `docs/agents/domain.md`.
