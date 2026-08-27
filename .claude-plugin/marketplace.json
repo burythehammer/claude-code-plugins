@@ -35,6 +35,16 @@
       },
       "source": "./plugins/claude-md-slim",
       "category": "development"
+    },
+    {
+      "name": "hemingway",
+      "description": "Rigorous copy-editing skill inspired by Hemingway's principles. Flags passive voice, adverbs, jargon, and AI slop, with specialized modes for marketing copy, technical specs, technical blogs, and SEO content.",
+      "version": "0.1.0",
+      "author": {
+        "name": "burythehammer"
+      },
+      "source": "./plugins/hemingway",
+      "category": "writing"
     }
   ]
 }

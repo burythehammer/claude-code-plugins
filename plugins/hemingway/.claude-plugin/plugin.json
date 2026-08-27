@@ -1,0 +1,10 @@
+{
+  "name": "hemingway",
+  "version": "0.1.0",
+  "description": "Rigorous copy-editing skill inspired by Hemingway's principles: clarity, directness, economy of words. Specialized modes for marketing copy, technical specs, technical blogs, SEO content, and de-slopping AI text.",
+  "author": {
+    "name": "burythehammer"
+  },
+  "repository": "https://github.com/burythehammer/claude-code-plugins",
+  "license": "MIT"
+}
