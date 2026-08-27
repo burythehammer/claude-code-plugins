@@ -1,13 +1,11 @@
 ---
 name: migrate-to-plugin-framework
 description: >-
-  This skill should be used when migrating Terraform provider data sources or
-  resources from hashicorp/terraform-plugin-sdk/v2 to
-  hashicorp/terraform-plugin-framework. Trigger phrases include "migrate to
-  plugin framework", "SDK v2 to plugin framework", "convert to plugin framework",
-  "migrate data source", "migrate resource", "plugin framework migration",
-  "move to framework", or "upgrade from SDK v2". Provides step-by-step migration
-  workflow, code patterns, schema mapping, and common gotchas.
+  Migrate a Terraform provider data source or resource from
+  hashicorp/terraform-plugin-sdk/v2 to hashicorp/terraform-plugin-framework.
+  Trigger on "migrate to plugin framework", "SDK v2 to plugin framework", or
+  "upgrade from SDK v2". Provides step-by-step migration workflow, code
+  patterns, schema mapping, and common gotchas.
 ---
 
 # Terraform SDK v2 to Plugin Framework Migration
@@ -78,14 +76,12 @@ Consult `references/schema-mapping.md` for the full type mapping table.
 
 Create the schema definition with: interface checks, struct, constructor, Metadata, Configure, and Schema methods.
 
-Key rules:
+Key rules that need more than a lookup:
 - **Protocol v5 nested blocks** — if the provider uses `tf5muxserver`, SDK v2 `TypeSet`/`TypeList` with `Elem: &schema.Resource{}` MUST become blocks, not attributes. See `references/gotchas.md` #1.
 - **`MaxItems: 1` nested objects** become `SingleNestedBlock`. See `references/gotchas.md` #6.
 - **Explicit `id`** — declare as `schema.StringAttribute{Computed: true}`. See `references/gotchas.md` #5.
-- **`ForceNew`** becomes `planmodifier.RequiresReplace()`.
-- **`DefaultFunc`** becomes `Default` (e.g., `stringdefault.StaticString("value")`).
-- **`DiffSuppressFunc`** becomes a custom `planmodifier`.
-- **`CustomizeDiff`** becomes `ModifyPlan` (implement `ResourceWithModifyPlan`).
+
+For field-behaviour equivalents (`ForceNew`, `DefaultFunc`, `DiffSuppressFunc`, `CustomizeDiff`, etc.), consult the Field Behaviour Mapping table in `references/schema-mapping.md`.
 
 For code templates, see `references/data-source-template.md` or `references/resource-template.md`.
 

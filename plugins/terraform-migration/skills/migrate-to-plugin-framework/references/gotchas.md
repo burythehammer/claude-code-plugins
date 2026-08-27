@@ -42,6 +42,8 @@ The model struct still uses `types.Set`/`types.List` regardless — the block vs
 
 ## 2. API Pointer Dereference
 
+**Severity:** Breaking — compile error
+
 Many Go API clients return pointer types (`*string`, `*int`) but `types.StringValue()` expects concrete types.
 
 ```go
@@ -57,6 +59,8 @@ If the provider's API client has safe dereference helpers (e.g. `StringValue(*st
 ---
 
 ## 3. Flatten Pattern for Nested Sets
+
+**Severity:** Breaking — panics on nil pointer dereference if not followed
 
 Standard pattern for converting API responses to Plugin Framework nested sets:
 
@@ -100,6 +104,8 @@ Key points:
 
 ## 4. Nil Safety
 
+**Severity:** Breaking — panics at runtime if omitted
+
 **Client check — required at the start of every Read/Create/Update/Delete:**
 ```go
 if r.client == nil {
@@ -123,6 +129,8 @@ for _, item := range items {
 
 ## 5. Explicit `id` Attribute
 
+**Severity:** Silent — cryptic test failures, no compile or runtime error
+
 SDK v2 automatically injected an implicit `id` attribute. The Plugin Framework does not.
 
 Declare `id` in three places:
@@ -143,6 +151,8 @@ Forgetting `id` causes cryptic test failures. There is no `d.SetId()` equivalent
 ---
 
 ## 6. MaxItems:1 → SingleNestedBlock
+
+**Severity:** Breaking — schema/state type mismatch at runtime
 
 SDK v2 `TypeList`/`TypeSet` with `MaxItems: 1` and `Elem: &schema.Resource{}` should become `schema.SingleNestedBlock` rather than `ListNestedBlock`/`SetNestedBlock`.
 
