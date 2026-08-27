@@ -1,6 +1,6 @@
 # Claude Code Plugins
 
-A [Claude Code](https://claude.com/claude-code) plugin marketplace with skills for Terraform provider development, project wiki maintenance, and CLAUDE.md housekeeping.
+A [Claude Code](https://claude.com/claude-code) plugin marketplace with skills for Terraform provider development, project wiki maintenance, CLAUDE.md housekeeping, and copy-editing.
 
 Each plugin is a set of Markdown skills that Claude Code loads at runtime — there is no build step or compiled code. Plugins also ship manifests for Codex, Cursor, and Gemini CLI, so the same skills can be used across tools.
 
@@ -11,6 +11,7 @@ Each plugin is a set of Markdown skills that Claude Code loads at runtime — th
 | [terraform-migration](#terraform-migration) | Migrate Terraform providers from SDK v2 to the Plugin Framework |
 | [repo-wiki](#repo-wiki) | Maintain structured per-project wikis in Outline |
 | [claude-md-slim](#claude-md-slim) | Audit and slim down bloated CLAUDE.md files with progressive disclosure |
+| [hemingway](#hemingway) | Copy-edit for clarity, directness, and economy of words |
 
 ### terraform-migration
 
@@ -53,6 +54,14 @@ Audits bloated `CLAUDE.md` files and restructures them with progressive disclosu
 
 The workflow is **audit → confirm → apply**: it always shows a report of proposed changes before touching the file. Triggers on prompts like "my CLAUDE.md is too long", "slim down the project instructions", or "audit CLAUDE.md for context bloat".
 
+### hemingway
+
+Rigorous copy-editing skill inspired by Hemingway's principles: clarity, directness, economy of words.
+
+- Analysis framework covering sentence complexity, passive voice, adverbs, and jargon
+- Specialized modes for product marketing, technical specs, technical blogs, SEO blogs, and de-slopping AI text
+- Trigger-gated mode files loaded only when their trigger phrase appears in the request
+
 ## Installation
 
 Add the marketplace inside an interactive Claude Code session:
@@ -67,6 +76,7 @@ Then install the plugins you want:
 /plugin install terraform-migration@burythehammer-claude-code-plugins
 /plugin install repo-wiki@burythehammer-claude-code-plugins
 /plugin install claude-md-slim@burythehammer-claude-code-plugins
+/plugin install hemingway@burythehammer-claude-code-plugins
 ```
 
 ## Local development
