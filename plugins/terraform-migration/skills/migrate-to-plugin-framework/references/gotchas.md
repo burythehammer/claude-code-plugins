@@ -1,6 +1,6 @@
 # Migration Gotchas
 
-Common failure modes discovered during real provider migrations. Each entry addresses a genuine issue that applies to any muxed SDK v2 + Plugin Framework provider.
+Failure modes that apply to any muxed SDK v2 + Plugin Framework provider migration.
 
 ---
 

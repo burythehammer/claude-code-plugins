@@ -1,11 +1,8 @@
 ---
 name: migrate-to-plugin-framework
 description: >-
-  Migrate a Terraform provider data source or resource from
+  Use when migrating a Terraform provider data source or resource from
   hashicorp/terraform-plugin-sdk/v2 to hashicorp/terraform-plugin-framework.
-  Trigger on "migrate to plugin framework", "SDK v2 to plugin framework", or
-  "upgrade from SDK v2". Provides step-by-step migration workflow, code
-  patterns, schema mapping, and common gotchas.
 ---
 
 # Terraform SDK v2 to Plugin Framework Migration
@@ -108,16 +105,9 @@ Three changes required:
 
 > Use the registration files identified in Phase 0. Look for how existing framework data sources/resources are registered.
 
-### Phase 7: Verify Build Iteratively
+### Phase 7: Verify Build
 
-Run the build and fix errors in a loop:
-
-1. Run `go build ./...`
-2. If compilation errors occur:
-   - Fix the reported errors
-   - Run `go build ./...` again
-3. Run `go vet ./...` to catch additional issues
-4. Repeat until clean
+Run `go build ./...` in a tight loop — fix each reported error, rerun, repeat until clean. Then run `go vet ./...` and loop again on anything it reports.
 
 Common build errors during migration:
 - Missing imports (framework packages have different import paths than SDK v2)
