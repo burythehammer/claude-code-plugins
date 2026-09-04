@@ -1,6 +1,6 @@
 ---
 name: repo-wiki
-description: Use when the user invokes /repo-wiki, or asks to bootstrap, update, sync, audit, fact-check, enrich, fix, or search a project's Outline wiki — or when wiki facts may be stale or wrong, pages orphaned or isolated, coverage sparse, or documentation has drifted from the code.
+description: Use when the user invokes /repo-wiki, or asks to bootstrap, sync, lint, enrich, or search a project's Outline wiki — or proactively, when wiki facts may be stale, pages orphaned, coverage sparse, or docs have drifted from the code.
 ---
 
 # Repo Wiki
@@ -29,8 +29,6 @@ Every command drives the **Outline MCP server** (`mcp__outline__*` tools). Befor
 | Looking something up — *search, find, "where is…"* | `/repo-wiki search <query>` |
 
 **Invoked with no mode?** Resolve IDs (below). No wiki found → offer `init`. Wiki found → say what exists and ask which mode fits; default to `sync` if the user only wants it current.
-
-**Command ordering:** Run `lint` before `enrich` — enriching stale content embeds errors deeper.
 
 ### Resolve IDs for the current repo (first step of every command)
 
@@ -67,7 +65,7 @@ Bootstrap a wiki for a repo that has none. If local memory or Outline already ha
 2. Gather: `CLAUDE.md`/`README.md`, primary config file, `git log --oneline -40`, any existing Outline docs.
 3. Create the **root** document, named after the repo, at the chosen location — the wiki home and top-level directory. Fill its body last (step 7).
 4. Create a **schema** document under the root (`parentDocumentId=<root id>`, as for every child below) — file-structure table, entity-page template, log format, source-of-truth hierarchy.
-5. Create a **log** document under the root — backfill from git history; format `| YYYY-MM-DD | TYPE | Summary |`; types: `added · changed · fixed · removed · learned`.
+5. Create a **log** document under the root — backfill from git history; format `| YYYY-MM-DD | TYPE | Summary |`; types: `added · changed · fixed · removed · learned`. Write each summary as *why*, not *what*: "Fixed auth loop — root cause: token refresh misread a 401" beats "Fixed auth".
 6. Create **entity** documents under the root — one per significant component, following the schema template; skip trivial pass-throughs. If an entity needs sub-pages, nest them under it and give that entity a `## Sub-pages` directory.
 7. **Build the root directory** — now that every child exists, patch the root body (see Structure): a one-line repo description, then entity links grouped by category, plus links to the schema and log docs. No blank parents.
 8. **Write project memory** — create `~/.claude/projects/<encoded-cwd>/memory/repo-wiki.md` from the template below, recording the Collection ID from step 1 plus the Root / Schema / Log doc IDs that `create_document` returned in steps 3–5; add a pointer line to `MEMORY.md` in the same directory. This is the fast-path lookup for every future session.
@@ -100,10 +98,10 @@ Add to `MEMORY.md`:
 
 Bring the wiki up to date with recent changes. Incremental — only touches what changed.
 
-1. Resolve IDs (above). When the memory file is present, the root, schema, and log doc IDs come straight from it — no search needed; otherwise the fallback in Resolve IDs applies (and may offer `init`).
+1. Resolve IDs (above).
 2. `git log --after="<last-log-date>"` (the date of the log doc's newest entry) + any uncommitted session changes.
 3. Map commits → affected entity documents; for each: `fetch` the doc, compare to current code, update stale facts, add new gotchas; `create_document` from the schema template if it doesn't exist yet, and add a link to it in its parent directory (the root, or the entity it nests under).
-4. Append to the log document (`update_document` with `editMode="append"`) — never edit past entries.
+4. Append to the log document (`update_document` with `editMode="append"`) — never edit past entries; correct an error with a new row instead of rewriting history.
 5. Report in two sentences.
 
 ---
@@ -146,24 +144,3 @@ Goes beyond `init`/`sync`, which capture high-level structure. Run `lint` first.
 3. `fetch(resource="document", id=...)` on the 1–3 most relevant results — summaries are rarely enough.
 4. Answer with citations; don't fall back on general knowledge if the wiki doesn't have it.
 5. Surface gaps — if the answer required reading code rather than the wiki, say so and offer to update the document.
-
----
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---------|-----|
-| Wiki commands fail with cryptic MCP errors | Confirm the Outline MCP server is connected before starting (see Prerequisites) |
-| Re-searching for the schema/log doc every run | Store their IDs in the memory file at `init`; read them during resolve |
-| Re-reading the full wiki on every sync | Use the log doc's newest entry date as the `--after` cursor — only read what changed |
-| Editing past log entries | Append only; add a correction row if needed |
-| Log entries describing *what* not *why* | "Fixed auth loop — root cause: token refresh misread a 401" beats "Fixed auth" |
-| Creating documents for trivial components | Only document entities with non-obvious behaviour, gotchas, or decisions worth preserving |
-| Leaving a parent or root doc blank | A parent is a directory — fill it with links to its children (see Structure) |
-| Search returns nothing → falling back on memory | Say the wiki doesn't have it; offer to add it |
-| Running `enrich` before `lint` | Enriching inaccurate pages embeds wrong information deeper |
-| Using `sync` after a major refactor/rename | Use `lint` — `sync` only sees git history; `lint` sees current code state |
-| Creating entity pages as drafts | Publish them (the default) — drafts are invisible to `lint` and `search` |
-| Deleting orphaned documents | Archive with `delete_document(archive=true)`; historical context has value |
-| `lint` rewriting whole documents for one wrong fact | Surgical `update_document(editMode="patch")` only; preserve non-verifiable narrative |
-| Starting document content with H1 | Outline stores the title separately — start the body with H2 or prose |
