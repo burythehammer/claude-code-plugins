@@ -67,11 +67,15 @@ See `README.md` for the current plugin names.
 
 ### Issue tracker
 
-Issues live as GitHub issues on `burythehammer/claude-code-plugins` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
+Issues live on Forgejo (`forgejo.burythehammer.com/burythehammer/claude-code-plugins`, via the `forgejo` MCP). Code, branches and PRs live on GitHub (`burythehammer/claude-code-plugins`, via `gh`); the Forgejo copy of the code is a mirror, pushed by hand. See `docs/agents/issue-tracker.md`.
+
+### Wiki
+
+The repo wiki is the Forgejo wiki (the Outline copy is frozen). Append to its `log` page after significant changes. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-Default five canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+The `needs-*` / `ready-*` / `wontfix` set plus `priority:*`, `spec` and `subtask`. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
