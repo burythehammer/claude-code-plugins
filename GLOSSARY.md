@@ -30,7 +30,8 @@ _Avoid_: Document, doc, article
 
 **Home page**:
 The wiki's entry page: a one-line description of the repo, then links to every
-entity page, the schema page and the log page. It is the wiki's index.
+entity page, the schema page and the log page. It is the wiki's index and the
+top directory page, listing its children under `## Sub-pages`.
 _Avoid_: Root doc, index page
 
 **Schema page**:

@@ -11,7 +11,7 @@ Structured wikis, one per code project. Compile knowledge into persistent pages 
 
 Every page that has children is a **directory page**: it lists all its direct children under a `## Sub-pages` heading, so no page is left blank and every page is reachable by links. Hierarchy is link-based only; page names stay flat. (If the wiki is nested under a pre-existing page, that external page is out of scope; the skill never edits it.)
 
-- **Home page** (named after the repo): a one-line description, then entity links grouped by category, plus links to the schema and log pages. It is the top directory page and the wiki's index; there is no separate index page. It also lists its children under `## Sub-pages`.
+- **Home page** (named after the repo, unless the backend reference file fixes the name): a one-line description, then entity links grouped by category, plus links to the schema and log pages. It is the top directory page and the wiki's index; there is no separate index page. It also lists its children under `## Sub-pages`.
 - **Schema page**: the wiki's conventions (see `init`).
 - **Log page**: append-only change history.
 - **Entity pages**: one component each. An entity with sub-pages is a directory page and lists them under `## Sub-pages`.
@@ -67,12 +67,13 @@ Bootstrap a wiki for a repo that has none. If local memory or the backend alread
 
 1. **Agree on backend and location** — ask which backend the wiki uses and where it should live; the backend reference file says how to present candidates. Load that reference file. Never repurpose an existing page as the home page; always create your own.
 2. Gather: `CLAUDE.md`/`README.md`, primary config file, `git log --oneline -40`, any existing wiki pages.
-3. Create the **home page**, named after the repo, at the chosen location: the top directory page. Fill its body last (step 7).
+3. Create the **home page**, named after the repo unless the backend reference file fixes the name, at the chosen location: the top directory page. Fill its body last (step 7).
 4. Create a **schema page** under the home page (as for every child below): file-structure table, entity-page template, log format, source-of-truth hierarchy.
 5. Create a **log page** under the home page. Backfill from git history; format `| YYYY-MM-DD | TYPE | Summary |`; types: `added · changed · fixed · removed · learned`. Write each summary as *why*, not *what*: "Fixed auth loop — root cause: token refresh misread a 401" beats "Fixed auth".
 6. Create **entity pages** under the home page: one per significant component, following the schema template; skip trivial pass-throughs. If an entity needs sub-pages, create them under it and give that entity a `## Sub-pages` section.
 7. **Build the home page's directory** — now that every child exists, edit its body (see Structure): a one-line repo description, then entity links grouped by category, plus links to the schema and log pages, and a `## Sub-pages` section listing every direct child. No blank directory pages.
 8. **Write project memory** — create `~/.claude/projects/<encoded-cwd>/memory/repo-wiki.md` from the template below, recording the backend and the identifiers the backend reference file lists, using the values returned when the pages were created; add a pointer line to `MEMORY.md` in the same directory. This is the fast-path lookup for every future session.
+9. Finish by applying the backend reference file's commit and push rule (a no-op on Outline).
 
 ### Memory file template
 
@@ -103,7 +104,8 @@ Bring the wiki up to date with recent changes. Incremental — only touches what
 2. `git log --after="<last-log-date>"` (the date of the log page's newest entry) + any uncommitted session changes.
 3. Map commits → affected entity pages; for each: read the page, compare to current code, update stale facts, add new gotchas; create it from the schema template if it doesn't exist yet, and add a link to it in its parent directory page (the home page, or the entity it nests under).
 4. Append to the log page. Never edit past entries; correct an error with a new row instead of rewriting history.
-5. Report in two sentences.
+5. Finish by applying the backend reference file's commit and push rule (a no-op on Outline).
+6. Report in two sentences.
 
 ---
 
@@ -120,6 +122,7 @@ Verify wiki accuracy against current code — fix stale facts, retire orphaned p
 5. **Verify** — use available code search tools + filesystem; classify: **Stale** (was true, no longer) · **Wrong** (never accurate) · **Incomplete** (true but missing caveats).
 6. Fix in place — surgical edits only, never rewrite entire pages.
 7. Append to the log page — type `fixed`; note any pages retired or relinked.
+8. Finish by applying the backend reference file's commit and push rule (a no-op on Outline).
 
 ---
 
@@ -134,7 +137,8 @@ Goes beyond `init`/`sync`, which capture high-level structure. Run `lint` first.
 3. Investigate with available code search — look for: preconditions, failure modes, perf limits, external-state dependencies, upstream-bug workarounds.
 4. Write enrichments — edit existing pages, or create new ones (and link them into their parent directory page).
 5. Append to the log page — type `changed`; note the category added (e.g. "documented failure modes").
-6. Report: what was enriched + the single most valuable finding — two sentences max.
+6. Finish by applying the backend reference file's commit and push rule (a no-op on Outline).
+7. Report: what was enriched + the single most valuable finding — two sentences max.
 
 ---
 
