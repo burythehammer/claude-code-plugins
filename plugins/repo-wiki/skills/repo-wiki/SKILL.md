@@ -1,6 +1,6 @@
 ---
 name: repo-wiki
-description: Use when the user invokes /repo-wiki, or asks to bootstrap, sync, lint, enrich, or search a project's Outline wiki — or proactively, when wiki facts may be stale, pages orphaned, coverage sparse, or docs have drifted from the code.
+description: Use when the user invokes /repo-wiki, or asks to bootstrap, sync, lint, enrich, or search a project's wiki (Outline, GitHub or Forgejo) — or proactively, when wiki facts may be stale, pages orphaned, coverage sparse, or docs have drifted from the code.
 ---
 
 # Repo Wiki
@@ -35,6 +35,7 @@ A wiki's **backend** is where its pages are stored. Commands never call a backen
 | `backend` | Reference file |
 |-----------|----------------|
 | `outline` (or field missing) | `references/backend-outline.md` |
+| `github`, `forgejo` | `references/backend-git-wiki.md` |
 
 Follow that file's prerequisites before any wiki work. If a prerequisite is unmet, stop and tell the user; never fall back to writing wiki content into local files or inventing page IDs.
 
@@ -84,7 +85,7 @@ metadata:
 ---
 
 - **Backend:** `outline`   <!-- outline | github | forgejo; a missing field means outline -->
-- (backend fields: the identifiers and location listed in the backend reference file's "Memory fields")
+- (backend fields: see the backend reference file's "Memory fields"; git backends record the wiki remote URL)
 ```
 
 Add to `MEMORY.md`:

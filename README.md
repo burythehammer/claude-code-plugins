@@ -9,7 +9,7 @@ Each plugin is a set of Markdown skills that Claude Code loads at runtime — th
 | Plugin | Description |
 | ------ | ----------- |
 | [terraform-migration](#terraform-migration) | Migrate Terraform providers from SDK v2 to the Plugin Framework |
-| [repo-wiki](#repo-wiki) | Maintain structured per-project wikis in Outline |
+| [repo-wiki](#repo-wiki) | Maintain structured per-project wikis in Outline, GitHub or Forgejo |
 | [claude-md-slim](#claude-md-slim) | Audit and slim down bloated CLAUDE.md files with progressive disclosure |
 | [hemingway](#hemingway) | Copy-edit for clarity, directness, and economy of words |
 
@@ -30,18 +30,18 @@ The skill triggers automatically on prompts like:
 
 ### repo-wiki
 
-Maintains a structured wiki per code project in [Outline](https://www.getoutline.com/), compiling knowledge into persistent pages so future sessions don't re-derive it from code.
+Maintains a structured wiki per code project, in [Outline](https://www.getoutline.com/), a GitHub wiki or a Forgejo wiki, compiling knowledge into persistent pages so future sessions don't re-derive it from code.
 
 | Command | Purpose |
 | ------- | ------- |
 | `/repo-wiki init` | Bootstrap a wiki for a repo that has none |
 | `/repo-wiki sync` | Update the wiki after recent commits |
-| `/repo-wiki lint` | Fix stale facts and archive orphaned pages |
+| `/repo-wiki lint` | Fix stale facts and retire orphaned pages |
 | `/repo-wiki enrich` | Deepen coverage with non-obvious details from code |
 | `/repo-wiki search <query>` | Look something up in the wiki |
 
 > [!IMPORTANT]
-> Requires an Outline MCP server configured in your Claude Code setup. Without it, wiki commands will refuse to run rather than fall back to local files.
+> Outline wikis require an Outline MCP server configured in your Claude Code setup; without it, wiki commands will refuse to run rather than fall back to local files. GitHub and Forgejo wikis need only push access to the wiki remote (and `gh` for the GitHub visibility check). On a public repo the skill asks before pushing and never writes private hostnames, URLs or secrets.
 
 ### claude-md-slim
 
