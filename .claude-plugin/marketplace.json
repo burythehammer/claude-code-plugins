@@ -18,8 +18,8 @@
     },
     {
       "name": "repo-wiki",
-      "description": "Skills for maintaining structured per-project wikis in Outline. Supports init, sync, lint, enrich, and search commands.",
-      "version": "0.1.0",
+      "description": "Skills for maintaining structured per-project wikis in Outline, GitHub or Forgejo wikis. Supports init, sync, lint, enrich, and search commands.",
+      "version": "0.2.0",
       "author": {
         "name": "burythehammer"
       },
