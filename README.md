@@ -41,7 +41,7 @@ Maintains a structured wiki per code project, in [Outline](https://www.getoutlin
 | `/repo-wiki search <query>` | Look something up in the wiki |
 
 > [!IMPORTANT]
-> Outline wikis require an Outline MCP server configured in your Claude Code setup; without it, wiki commands will refuse to run rather than fall back to local files. GitHub and Forgejo wikis need only push access to the wiki remote (and `gh` for the GitHub visibility check). On a public repo the skill asks before pushing and never writes private hostnames, URLs or secrets.
+> Outline wikis require an Outline MCP server configured in your Claude Code setup; without it, wiki commands will refuse to run rather than fall back to local files. GitHub and Forgejo wikis need only push access to the wiki remote (and `gh` for the GitHub visibility check). On a public repo the skill checks the wiki for private terms and asks before pushing (unless you pre-approved the push), and never writes private hostnames, URLs or secrets.
 
 ### claude-md-slim
 
