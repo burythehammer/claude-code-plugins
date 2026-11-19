@@ -5,18 +5,38 @@ description: Use when the user invokes /repo-wiki, or asks to bootstrap, sync, l
 
 # Repo Wiki
 
-Structured wikis in Outline — one per code project. Compile knowledge into persistent pages rather than re-deriving it from code each session.
+Structured wikis, one per code project. Compile knowledge into persistent pages rather than re-deriving it from code each session. Vocabulary follows `GLOSSARY.md` (wiki, backend, page, home page, schema page, log page, entity page, directory page, retire).
 
 ## Structure
 
-Within the wiki, every parent document is a **directory**: it opens with links to all its direct children — no wiki page is left blank. (If you nest the wiki under a pre-existing doc, that external doc is out of scope — the skill never edits it.)
+Every page that has children is a **directory page**: it lists all its direct children under a `## Sub-pages` heading, so no page is left blank and every page is reachable by links. Hierarchy is link-based only; page names stay flat. (If the wiki is nested under a pre-existing page, that external page is out of scope; the skill never edits it.)
 
-- **Root doc** (named after the repo) — the wiki home: a one-line description, then entity links grouped by category, plus links to the schema and log docs. This *is* the index; there is no separate index page.
-- **Entity docs** — describe one component each; an entity that has sub-pages opens with a `## Sub-pages` directory linking them.
+- **Home page** (named after the repo): a one-line description, then entity links grouped by category, plus links to the schema and log pages. It is the top directory page and the wiki's index; there is no separate index page. It also lists its children under `## Sub-pages`.
+- **Schema page**: the wiki's conventions (see `init`).
+- **Log page**: append-only change history.
+- **Entity pages**: one component each. An entity with sub-pages is a directory page and lists them under `## Sub-pages`.
 
-## Prerequisites
+## Backends and operations
 
-Every command drives the **Outline MCP server** (`mcp__outline__*` tools). Before any wiki work, confirm those tools are available. If they are not, stop and tell the user the Outline MCP server isn't connected — wiki commands can't run until it is. Do **not** fall back to writing wiki content into local files or inventing document IDs.
+A wiki's **backend** is where its pages are stored. Commands never call a backend directly; they use these abstract operations, and the backend reference file maps each to its mechanics:
+
+| Operation | Meaning |
+|-----------|---------|
+| read | Get one page's content |
+| list | Enumerate every page in the wiki |
+| create | Add a page under a parent (directory) page |
+| edit | Change part of a page in place, surgically |
+| append | Add to the end of a page |
+| retire | Take a page out of the wiki, keeping a record that it existed |
+| search | Find pages matching a text query |
+
+**Load only the reference file for the repo's backend**, once the backend is known (see Resolve the wiki):
+
+| `backend` | Reference file |
+|-----------|----------------|
+| `outline` (or field missing) | `references/backend-outline.md` |
+
+Follow that file's prerequisites before any wiki work. If a prerequisite is unmet, stop and tell the user; never fall back to writing wiki content into local files or inventing page IDs.
 
 ## Quick Reference
 
@@ -28,68 +48,48 @@ Every command drives the **Outline MCP server** (`mcp__outline__*` tools). Befor
 | Accurate but sparse — *enrich, deepen, expand* | `/repo-wiki enrich` |
 | Looking something up — *search, find, "where is…"* | `/repo-wiki search <query>` |
 
-**Invoked with no mode?** Resolve IDs (below). No wiki found → offer `init`. Wiki found → say what exists and ask which mode fits; default to `sync` if the user only wants it current.
+**Invoked with no mode?** Resolve the wiki (below). None found → offer `init`. Wiki found → say what exists and ask which mode fits; default to `sync` if the user only wants it current.
 
-### Resolve IDs for the current repo (first step of every command)
+### Resolve the wiki for the current repo (first step of every command)
 
-1. **Local memory (fast path):** Read `~/.claude/projects/<encoded-cwd>/memory/repo-wiki.md`, where `<encoded-cwd>` is the absolute CWD with every `/` replaced by `-` (e.g. `/home/alice/workspace/myapp` → `-home-alice-workspace-myapp`). If found, extract the Collection ID, Root doc ID, and the Schema / Log doc IDs.
-2. **Outline search (fallback):** `list_documents(query="<repo-name>")` to find the wiki root, note its `collectionId`, then `list_collection_documents(collectionId=...)` and identify the schema and log docs by title. Offer to write the memory file so the next session skips this search.
+1. **Local memory (fast path):** Read `~/.claude/projects/<encoded-cwd>/memory/repo-wiki.md`, where `<encoded-cwd>` is the absolute CWD with every `/` replaced by `-` (e.g. `/home/alice/workspace/myapp` → `-home-alice-workspace-myapp`). If found, read its `backend` field: **a memory file with no `backend` field means `outline`**. Load that backend's reference file, then extract the page identifiers it names (home, schema and log pages, plus any backend location fields).
+2. **Backend lookup (fallback):** with no memory file, ask the user which backend the wiki uses (default `outline`), load its reference file, and follow its "Resolving the wiki" section to find the home page and identify the schema and log pages by title. Offer to write the memory file so the next session skips this search.
 3. **Neither found:** offer to run `/repo-wiki init`.
 
-Always re-resolve at the start of a command — never trust IDs remembered from earlier in the conversation. If a cached ID resolves to an archived or missing document, re-resolve via search and rewrite the memory file.
-
-## Outline tool reference
-
-| Task | Tool |
-|------|------|
-| Search documents (full-text) | `list_documents(query=...)` |
-| Read a document | `fetch(resource="document", id=...)` |
-| List all docs in a collection (full tree) | `list_collection_documents(collectionId=...)` |
-| Create a new document | `create_document(title=..., text=..., parentDocumentId=...)` |
-| Surgical edit (preferred) | `update_document(id=..., editMode="patch", findText=..., text=...)` |
-| Append / prepend | `update_document(id=..., editMode="append"\|"prepend", text=...)` |
-| Full replace (last resort) | `update_document(id=..., editMode="replace", text=...)` |
-| Archive an orphaned document | `delete_document(id=..., archive=true)` |
-
-- Document content must not start with an H1 — the title is a separate field; begin the body with H2 or prose.
-- Create documents **published** (the `create_document` default). Drafts and archived docs are excluded from `list_collection_documents` and full-text search, so `lint` and `search` can't see them.
-- `editMode="patch"` needs `findText` copied **verbatim** from the current markdown; it replaces only the first match and preserves the rest of the document's rich formatting. `replace` overwrites the whole document and discards formatting markdown can't represent — use it only as a last resort.
+Always re-resolve at the start of a command; never trust identifiers remembered from earlier in the conversation. If a remembered page resolves to a retired or missing page, re-resolve via search and rewrite the memory file.
 
 ---
 
 ## /repo-wiki init
 
-Bootstrap a wiki for a repo that has none. If local memory or Outline already has an entry for this repo, run `sync` instead.
+Bootstrap a wiki for a repo that has none. If local memory or the backend already has a wiki for this repo, run `sync` instead.
 
-1. **Agree on location** — ask where the wiki should live. Use `list_collections` + `list_collection_documents` to present candidates; the user picks a collection (and optionally an existing doc to nest under). Never repurpose an existing doc as the wiki — always create your own root. Note the chosen **collection's ID**; it goes in the memory file (step 8).
-2. Gather: `CLAUDE.md`/`README.md`, primary config file, `git log --oneline -40`, any existing Outline docs.
-3. Create the **root** document, named after the repo, at the chosen location — the wiki home and top-level directory. Fill its body last (step 7).
-4. Create a **schema** document under the root (`parentDocumentId=<root id>`, as for every child below) — file-structure table, entity-page template, log format, source-of-truth hierarchy.
-5. Create a **log** document under the root — backfill from git history; format `| YYYY-MM-DD | TYPE | Summary |`; types: `added · changed · fixed · removed · learned`. Write each summary as *why*, not *what*: "Fixed auth loop — root cause: token refresh misread a 401" beats "Fixed auth".
-6. Create **entity** documents under the root — one per significant component, following the schema template; skip trivial pass-throughs. If an entity needs sub-pages, nest them under it and give that entity a `## Sub-pages` directory.
-7. **Build the root directory** — now that every child exists, patch the root body (see Structure): a one-line repo description, then entity links grouped by category, plus links to the schema and log docs. No blank parents.
-8. **Write project memory** — create `~/.claude/projects/<encoded-cwd>/memory/repo-wiki.md` from the template below, recording the Collection ID from step 1 plus the Root / Schema / Log doc IDs that `create_document` returned in steps 3–5; add a pointer line to `MEMORY.md` in the same directory. This is the fast-path lookup for every future session.
+1. **Agree on backend and location** — ask which backend the wiki uses and where it should live; the backend reference file says how to present candidates. Load that reference file. Never repurpose an existing page as the home page; always create your own.
+2. Gather: `CLAUDE.md`/`README.md`, primary config file, `git log --oneline -40`, any existing wiki pages.
+3. Create the **home page**, named after the repo, at the chosen location: the top directory page. Fill its body last (step 7).
+4. Create a **schema page** under the home page (as for every child below): file-structure table, entity-page template, log format, source-of-truth hierarchy.
+5. Create a **log page** under the home page. Backfill from git history; format `| YYYY-MM-DD | TYPE | Summary |`; types: `added · changed · fixed · removed · learned`. Write each summary as *why*, not *what*: "Fixed auth loop — root cause: token refresh misread a 401" beats "Fixed auth".
+6. Create **entity pages** under the home page: one per significant component, following the schema template; skip trivial pass-throughs. If an entity needs sub-pages, create them under it and give that entity a `## Sub-pages` section.
+7. **Build the home page's directory** — now that every child exists, edit its body (see Structure): a one-line repo description, then entity links grouped by category, plus links to the schema and log pages, and a `## Sub-pages` section listing every direct child. No blank directory pages.
+8. **Write project memory** — create `~/.claude/projects/<encoded-cwd>/memory/repo-wiki.md` from the template below, recording the backend and the identifiers the backend reference file lists, using the values returned when the pages were created; add a pointer line to `MEMORY.md` in the same directory. This is the fast-path lookup for every future session.
 
 ### Memory file template
 
 ```markdown
 ---
 name: repo-wiki
-description: Outline wiki location for this repo — IDs used by the repo-wiki skill
+description: Wiki location for this repo — backend and page identifiers used by the repo-wiki skill
 metadata:
   type: reference
 ---
 
-- **Collection ID:** `<collection-id>`
-- **Root doc ID:** `<id>`   <!-- wiki home / directory -->
-- **Schema doc ID:** `<id>`
-- **Log doc ID:** `<id>`
-- **Wiki URL:** <url>
+- **Backend:** `outline`   <!-- outline | github | forgejo; a missing field means outline -->
+- (backend fields: the identifiers and location listed in the backend reference file's "Memory fields")
 ```
 
 Add to `MEMORY.md`:
 ```
-- [repo-wiki](repo-wiki.md) — Outline IDs (collection, root, schema, log) for the repo-wiki skill
+- [repo-wiki](repo-wiki.md) — wiki backend and page identifiers for the repo-wiki skill
 ```
 
 ---
@@ -98,27 +98,27 @@ Add to `MEMORY.md`:
 
 Bring the wiki up to date with recent changes. Incremental — only touches what changed.
 
-1. Resolve IDs (above).
-2. `git log --after="<last-log-date>"` (the date of the log doc's newest entry) + any uncommitted session changes.
-3. Map commits → affected entity documents; for each: `fetch` the doc, compare to current code, update stale facts, add new gotchas; `create_document` from the schema template if it doesn't exist yet, and add a link to it in its parent directory (the root, or the entity it nests under).
-4. Append to the log document (`update_document` with `editMode="append"`) — never edit past entries; correct an error with a new row instead of rewriting history.
+1. Resolve the wiki (above).
+2. `git log --after="<last-log-date>"` (the date of the log page's newest entry) + any uncommitted session changes.
+3. Map commits → affected entity pages; for each: read the page, compare to current code, update stale facts, add new gotchas; create it from the schema template if it doesn't exist yet, and add a link to it in its parent directory page (the home page, or the entity it nests under).
+4. Append to the log page. Never edit past entries; correct an error with a new row instead of rewriting history.
 5. Report in two sentences.
 
 ---
 
 ## /repo-wiki lint
 
-Verify wiki accuracy against current code — fix stale facts, archive orphaned pages, reconnect isolated ones.
+Verify wiki accuracy against current code — fix stale facts, retire orphaned pages, reconnect isolated ones.
 
 **State-driven, not event-driven.** Compares wiki claims to actual code state regardless of git history. Use after refactors, renames, or long gaps between syncs.
 
-1. Resolve IDs (above); `list_collection_documents(collectionId=...)` to enumerate every document in the wiki.
-2. **Orphans** — excluding the root, schema, and log docs (their IDs are in memory), confirm each remaining entity document's subject still exists (module, file, service, CLI command). If gone: `delete_document(id, archive=true)` — never silently delete.
-3. **Isolated pages** — walk the collection tree against the directories: every doc must be linked from its parent directory (the root body, or its parent entity's `## Sub-pages` section), and no directory may point at an archived/removed doc. Patch directories to add missing links and drop dead ones — no parent left blank.
-4. **Verifiable claims** — extract from surviving docs: file paths, symbol names, CLI flags, env vars, config keys, data flows. Skip narrative (decisions, history, gotchas).
+1. Resolve the wiki (above); list every page in the wiki.
+2. **Orphans** — excluding the home, schema and log pages, confirm each remaining entity page's subject still exists (module, file, service, CLI command). If gone: retire the page; never silently delete.
+3. **Isolated pages** — check the links, not the page names. Build the set of pages reachable by following links from the home page's `## Sub-pages` section and from each directory page's `## Sub-pages` section. Every page other than the home page must be linked from a directory page, and no directory page may link to a retired or missing page. Edit directory pages to add missing links and drop dead ones; no directory page left blank.
+4. **Verifiable claims** — extract from surviving pages: file paths, symbol names, CLI flags, env vars, config keys, data flows. Skip narrative (decisions, history, gotchas).
 5. **Verify** — use available code search tools + filesystem; classify: **Stale** (was true, no longer) · **Wrong** (never accurate) · **Incomplete** (true but missing caveats).
-6. Fix in-place — `update_document` with `editMode="patch"`; surgical edits only, never rewrite entire documents.
-7. Append to the log document — type `fixed`; note any documents archived or relinked.
+6. Fix in place — surgical edits only, never rewrite entire pages.
+7. Append to the log page — type `fixed`; note any pages retired or relinked.
 
 ---
 
@@ -128,19 +128,19 @@ Deepen wiki coverage with information in the code but not yet documented.
 
 Goes beyond `init`/`sync`, which capture high-level structure. Run `lint` first.
 
-1. Resolve IDs (above); `list_collection_documents` then `fetch` existing docs — map what's documented to avoid duplication.
+1. Resolve the wiki (above); list the pages, then read the existing ones — map what's documented to avoid duplication.
 2. Choose targets where code complexity exceeds wiki coverage: complex algorithms, silent error handling (swallowed exceptions, fallbacks, retries), code comments (`NOTE:` `HACK:` `FIXME:` `WARNING:`), test edge-case setups, config with non-obvious ordering.
 3. Investigate with available code search — look for: preconditions, failure modes, perf limits, external-state dependencies, upstream-bug workarounds.
-4. Write enrichments — `update_document` with `editMode="patch"` on existing documents, or `create_document` for new ones (link them into their parent directory).
-5. Append to the log document — type `changed`; note the category added (e.g. "documented failure modes").
+4. Write enrichments — edit existing pages, or create new ones (and link them into their parent directory page).
+5. Append to the log page — type `changed`; note the category added (e.g. "documented failure modes").
 6. Report: what was enriched + the single most valuable finding — two sentences max.
 
 ---
 
 ## /repo-wiki search
 
-1. Resolve IDs (above) — if not found, offer `init`.
-2. `list_documents(query="<user's query>", collectionId=...)`.
-3. `fetch(resource="document", id=...)` on the 1–3 most relevant results — summaries are rarely enough.
+1. Resolve the wiki (above) — if not found, offer `init`.
+2. Search the wiki for the user's query.
+3. Read the 1–3 most relevant results — summaries are rarely enough.
 4. Answer with citations; don't fall back on general knowledge if the wiki doesn't have it.
-5. Surface gaps — if the answer required reading code rather than the wiki, say so and offer to update the document.
+5. Surface gaps — if the answer required reading code rather than the wiki, say so and offer to update the page.
