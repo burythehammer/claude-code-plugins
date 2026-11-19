@@ -3,3 +3,6 @@
 *.swo
 *~
 .claude/
+.tfuk-specflow/active
+.tfuk-specflow/tmp/
+.claude/worktrees/

@@ -1,0 +1,65 @@
+{
+  "agent_docs": true,
+  "code_host": {
+    "kind": "github"
+  },
+  "conventions": {
+    "branch_prefixes": {
+      "extras": [
+        "docs",
+        "test",
+        "build",
+        "ci",
+        "perf",
+        "style"
+      ],
+      "map": {
+        "bug": "fix",
+        "chore": "chore",
+        "feature": "feat",
+        "other": "chore",
+        "refactor": "refactor",
+        "spike": "chore"
+      }
+    },
+    "inline_rules": {
+      "branch": "After the prefix, the ticket reference then a kebab-case slug: `<prefix>/<ticket>-<slug>`.\nExample: `docs/03-forgejo-issue-tracker`.",
+      "commit": "Conventional Commits, subject line only: `type: short description`.\nNo body, no trailers, no scope brackets.",
+      "pr": "Title: `<type>: <short description> (#<issue>)`, e.g. `docs: move issue tracker to Forgejo (#3)`, so GitHub links the issue.\nBody includes `Closes #<issue>` so the PR is linked to and closes its issue.\nAssignee: the author.\nLabels: one label matching the PR's type (feat, fix, docs, …).\nReview: none required.\nMerge strategy: merge commit.",
+      "release_notes": null,
+      "research_findings": "docs/research",
+      "spec_template": null,
+      "test": null,
+      "test_notes": null,
+      "typecheck": null
+    },
+    "worktrees": {
+      "enabled": true,
+      "path": ".claude/worktrees"
+    }
+  },
+  "prd": {
+    "backend": "file",
+    "file": {
+      "path": "docs/prd.md"
+    }
+  },
+  "specs": {
+    "backend": "github-issues",
+    "github-issues": {
+      "issue_types": {
+        "map": {
+          "bug": "bug",
+          "chore": "chore",
+          "feature": "feature",
+          "other": "other",
+          "refactor": "refactor",
+          "spike": "spike"
+        },
+        "mode": "label"
+      },
+      "owner": "burythehammer",
+      "repo": "claude-code-plugins"
+    }
+  }
+}
