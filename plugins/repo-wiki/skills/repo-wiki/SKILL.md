@@ -68,7 +68,7 @@ Bootstrap a wiki for a repo that has none. If local memory or the backend alread
 1. **Agree on backend and location** — ask which backend the wiki uses and where it should live; the backend reference file says how to present candidates. Load that reference file. Never repurpose an existing page as the home page; always create your own.
 2. Gather: `CLAUDE.md`/`README.md`, primary config file, `git log --oneline -40`, any existing wiki pages.
 3. Create the **home page**, named after the repo unless the backend reference file fixes the name, at the chosen location: the top directory page. Fill its body last (step 7).
-4. Create a **schema page** under the home page (as for every child below): file-structure table, entity-page template, log format, source-of-truth hierarchy.
+4. Create a **schema page** under the home page (as for every child below): file-structure table, entity-page template, log format, source-of-truth hierarchy. A backend reference file may give the schema page a fuller template; follow it where it does, and write no Outline-specific content (page IDs, parent documents) into a git wiki's schema.
 5. Create a **log page** under the home page. Backfill from git history; format `| YYYY-MM-DD | TYPE | Summary |`; types: `added · changed · fixed · removed · learned`. Write each summary as *why*, not *what*: "Fixed auth loop — root cause: token refresh misread a 401" beats "Fixed auth".
 6. Create **entity pages** under the home page: one per significant component, following the schema template; skip trivial pass-throughs. If an entity needs sub-pages, create them under it and give that entity a `## Sub-pages` section.
 7. **Build the home page's directory** — now that every child exists, edit its body (see Structure): a one-line repo description, then entity links grouped by category, plus links to the schema and log pages, and a `## Sub-pages` section listing every direct child. No blank directory pages.
@@ -101,7 +101,7 @@ Add to `MEMORY.md`:
 Bring the wiki up to date with recent changes. Incremental — only touches what changed.
 
 1. Resolve the wiki (above).
-2. `git log --after="<last-log-date>"` (the date of the log page's newest entry) + any uncommitted session changes.
+2. Find what changed since the log's newest entry. Where a log row names a commit (for example `(b550f77)`), use `git log <sha>..HEAD`. Otherwise use `git log --after="<last-log-date>"`, and for commits on the log's own date, read the log rows to see which the log already covers, since a date has no time of day. Add any uncommitted session changes. If nothing is newer than the log, change nothing, say so and stop. When you log a change, name the newest commit it covers in the row.
 3. Map commits → affected entity pages; for each: read the page, compare to current code, update stale facts, add new gotchas; create it from the schema template if it doesn't exist yet, and add a link to it in its parent directory page (the home page, or the entity it nests under).
 4. Append to the log page. Never edit past entries; correct an error with a new row instead of rewriting history.
 5. Finish by applying the backend reference file's commit and push rule (a no-op on Outline).
@@ -117,7 +117,7 @@ Verify wiki accuracy against current code — fix stale facts, retire orphaned p
 
 1. Resolve the wiki (above); list every page in the wiki.
 2. **Orphans** — excluding the home, schema and log pages, confirm each remaining entity page's subject still exists (module, file, service, CLI command). If gone: retire the page; never silently delete.
-3. **Isolated pages** — check the links, not the page names. Build the set of pages reachable by following links from the home page's `## Sub-pages` section and from each directory page's `## Sub-pages` section. Every page other than the home page must be linked from a directory page, and no directory page may link to a retired or missing page. Edit directory pages to add missing links and drop dead ones; no directory page left blank.
+3. **Isolated pages** — check the links, not the page names. Ignore link syntax inside code spans and fenced blocks (a schema page's `[Auth Flow](Auth-Flow)` example is not a link). Build the set of pages reachable by following links from the home page's `## Sub-pages` section and from each directory page's `## Sub-pages` section. Every page other than the home page must be linked from a directory page, and no directory page may link to a retired or missing page. Edit directory pages to add missing links and drop dead ones; no directory page left blank.
 4. **Verifiable claims** — extract from surviving pages: file paths, symbol names, CLI flags, env vars, config keys, data flows. Skip narrative (decisions, history, gotchas).
 5. **Verify** — use available code search tools + filesystem; classify: **Stale** (was true, no longer) · **Wrong** (never accurate) · **Incomplete** (true but missing caveats).
 6. Fix in place — surgical edits only, never rewrite entire pages.
